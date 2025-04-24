@@ -27,36 +27,37 @@ int Array_Length = sizeof(My_Array) / sizeof(My_Array[0]);
 std::barrier sync_point(thread_no);
 
 void reverse(int thread_id) {
-    int n = Array_Length / thread_no;//n = Thread başına düşen liste uzunluğu. Global veri olması daha optimal ama sınavda fonksyonun içine yazdığım için buraya bıraktım
+    int n = Array_Length / thread_no;//n = Thread baÅŸÄ±na dÃ¼ÅŸen liste uzunluÃ°u. Global veri olmasÄ± daha optimal ama sÄ±navda fonksyonun iÃ§ine yazdÄ±Ã°Ä±m iÃ§in buraya bÄ±raktÄ±m
     int* temp = new int[n];//Thread listesi
     for (int z = 0; z < n; z++) {
-        temp[z] = My_Array[((thread_id+1) * n)-(z+1)];//Numarası bir fazla olan thread'in ilk verisinin bir eksiğinden(bizim listemizin son elemanından) başlayarak listemizi azalan düzende temp'e yaz
+        temp[z] = My_Array[((thread_id+1) * n)-(z+1)];//NumarasÄ± bir fazla olan thread'in ilk verisinin bir eksiÃ°inden(bizim listemizin son elemanÄ±ndan) baÅŸlayarak listemizi azalan dÃ¼zende temp'e yaz
     }
-    sync_point.arrive_and_wait();//Tüm threadlerin önceki yazma işlemini yapmasını bekle(barrier)
+    sync_point.arrive_and_wait();//TÃ¼m threadlerin Ã¶nceki yazma iÅŸlemini yapmasÄ±nÄ± bekle(barrier)
 
     for (int q = 0; q < n; q++) {
-        My_Array[((thread_no - (thread_id+1)) * n) + q] = temp[q];//Threadlerin iç listelerini, threadlerin numaralarının tersine göre(Örnek: ilk thread'i son thread yerine, son threadi ilk thread yerine) geri global array'e yaz.
+        My_Array[((thread_no - (thread_id+1)) * n) + q] = temp[q];//Threadlerin iÃ§ listelerini, threadlerin numaralarÄ±nÄ±n tersine gÃ¶re(Ã–rnek: ilk thread'i son thread yerine, son threadi ilk thread yerine) geri global array'e yaz.
     }
-    delete[] temp;//Memory leak'i engellemek için temp'i sil, algoritma ile alakası yok
+    delete[] temp;//Memory leak'i engellemek iÃ§in temp'i sil, algoritma ile alakasÄ± yok
 }
 
 int main()
 {   
-    std::cout << Array_Length << std::endl;//Kontrol etmek için Array uzunluğunu yazdır
+    std::cout << Array_Length << std::endl;//Kontrol etmek iÃ§in Array uzunluÃ°unu yazdÄ±r
+    std::cout << " " << std::endl;//Araya boÅŸluk koy
     for (int i = 0; i < Array_Length; i++) {
-        std::cout << My_Array[i] << std::endl;//Yine kontrol etmek için array'in tüm elemanlarını yazdır
+        std::cout << My_Array[i] << std::endl;//Yine kontrol etmek iÃ§in array'in tÃ¼m elemanlarÄ±nÄ± yazdÄ±r
     }
-    std::cout << " " << std::endl;//Araya boşluk koy
-    std::vector<std::thread> threads;//Oluşacak thread'leri sonradan birleştirebilmek için vektör içine kaydet
+    std::cout << " " << std::endl;//Araya boÅŸluk koy
+    std::vector<std::thread> threads;//OluÅŸacak thread'leri sonradan birleÅŸtirebilmek iÃ§in vektÃ¶r iÃ§ine kaydet
     for (int x = 0; x < thread_no; x++) {
-        threads.emplace_back(reverse, x);//Threadleri oluştur
+        threads.emplace_back(reverse, x);//Threadleri oluÅŸtur
     }
 
     for (auto& t : threads) {
-        t.join();//Threadleri birleştir
+        t.join();//Threadleri birleÅŸtir
     }
     for (int i = 0; i < Array_Length; i++) {
-        std::cout << My_Array[i] << std::endl;//Threadlerin değiştirmiş olduğu array'i yazdır
+        std::cout << My_Array[i] << std::endl;//Threadlerin deÃ°iÅŸtirmiÅŸ olduÃ°u array'i yazdÄ±r
     }
     return 0;
 }
